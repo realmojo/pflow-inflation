@@ -11,5 +11,5 @@ export default async function CategoryPage({
   const category = fromSlug(decodeURIComponent(categorySlug));
   const firstName = CATEGORIES[category]?.[0];
   if (!firstName) redirect("/");
-  redirect(`/${categorySlug}/${toSlug(firstName)}`);
+  redirect(`/${categorySlug}/${encodeURIComponent(toSlug(firstName))}`);
 }
