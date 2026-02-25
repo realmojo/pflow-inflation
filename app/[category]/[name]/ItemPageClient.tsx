@@ -35,6 +35,9 @@ export default function ItemPageClient() {
 
   const [itemData, setItemData] = useState<ItemData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
+  const searchRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const item = INFLATION_ITEMS.find((i) => i.name === name);
@@ -79,6 +82,31 @@ export default function ItemPageClient() {
     return () => { document.head.removeChild(script); };
   }, [category, name]);
 
+  // Close search on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchFocused(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const sq = searchQuery.trim().toLowerCase();
+  const searchResults: { category: string; items: string[] }[] = [];
+  if (sq) {
+    for (const cat of CATEGORY_LIST) {
+      const catMatch = cat.toLowerCase().includes(sq);
+      const matchingItems = CATEGORIES[cat].filter(
+        (item) => item.toLowerCase().includes(sq) || catMatch
+      );
+      if (matchingItems.length > 0) {
+        searchResults.push({ category: cat, items: matchingItems });
+      }
+    }
+  }
+
   const foodList = CATEGORIES[category] ?? [];
   const trackingStart = itemData?.longTerm?.[0]?.year ?? "—";
   const trackingEnd = itemData?.lastUpdated ?? "—";
@@ -97,12 +125,62 @@ export default function ItemPageClient() {
           <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-2.5">
             통계청 KOSIS · 생활물가지수 2020=100
           </p>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-1.5">
-            대한민국 물가 인플레이션
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            외식·식재료·의류·교통·교육 등 151개 품목의 장기 물가 변화
-          </p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-1.5">
+                <a href="/" className="hover:opacity-80 transition-opacity">대한민국 물가 인플레이션</a>
+              </h1>
+              <p className="text-muted-foreground text-sm">
+                외식·식재료·의류·교통·교육 등 151개 품목의 장기 물가 변화
+              </p>
+            </div>
+            <div ref={searchRef} className="relative hidden sm:block flex-shrink-0 w-56">
+              <svg
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setSearchFocused(true); }}
+                onFocus={() => setSearchFocused(true)}
+                placeholder="품목 검색..."
+                className="w-full pl-9 pr-3 py-2 text-sm bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+              />
+              {searchFocused && sq.length > 0 && searchResults.length > 0 && (
+                <div className="absolute z-50 top-full mt-1 w-72 right-0 bg-card border border-border rounded-lg shadow-2xl max-h-72 overflow-y-auto">
+                  {searchResults.map(({ category: cat, items }) => (
+                    <div key={cat}>
+                      <a
+                        href={`/${encodeURIComponent(toSlug(cat))}/${encodeURIComponent(toSlug(items[0]))}`}
+                        className="block px-3 py-2 text-xs font-semibold text-primary uppercase tracking-wider hover:bg-muted/50 border-b border-border/50"
+                      >
+                        {cat}
+                      </a>
+                      {items.map((item) => (
+                        <a
+                          key={item}
+                          href={`/${encodeURIComponent(toSlug(cat))}/${encodeURIComponent(toSlug(item))}`}
+                          className="block px-3 py-2 pl-6 text-sm text-foreground hover:bg-muted/50"
+                        >
+                          {item}
+                        </a>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {searchFocused && sq.length > 0 && searchResults.length === 0 && (
+                <div className="absolute z-50 top-full mt-1 w-72 right-0 bg-card border border-border rounded-lg shadow-2xl p-4 text-center text-sm text-muted-foreground">
+                  검색 결과가 없습니다
+                </div>
+              )}
+            </div>
+          </div>
         </header>
 
         {/* Category select */}
