@@ -134,7 +134,7 @@ export default function ItemPageClient() {
                 외식·식재료·의류·교통·교육 등 151개 품목의 장기 물가 변화
               </p>
             </div>
-            <div ref={searchRef} className="relative hidden sm:block flex-shrink-0 w-56">
+            <div ref={searchRef} className="relative flex-shrink-0 w-40 sm:w-56">
               <svg
                 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none"
                 fill="none"
