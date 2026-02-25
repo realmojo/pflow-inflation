@@ -50,6 +50,21 @@ export const metadata: Metadata = {
   },
 };
 
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "대한민국 물가 인플레이션",
+  url: SITE_URL,
+  description:
+    "통계청 KOSIS 생활물가지수(2020=100) 기반 151개 품목의 장기 물가 변화를 한눈에 확인하세요.",
+  inLanguage: "ko",
+  publisher: {
+    "@type": "Organization",
+    name: "pflow.app",
+    url: "https://pflow.app",
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -57,6 +72,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={`${inter.variable} dark`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+      </head>
       <body className="min-h-screen bg-background font-sans antialiased">
         <main>{children}</main>
       </body>
