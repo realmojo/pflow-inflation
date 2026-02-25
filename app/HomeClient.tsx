@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { INFLATION_ITEMS, CATEGORIES, CATEGORY_LIST } from "@/lib/inflation-items";
+import Link from "next/link";
+import { CATEGORIES, CATEGORY_LIST } from "@/lib/inflation-items";
 import { toSlug } from "@/lib/slug";
 
+const itemHref = (cat: string, itemName: string) =>
+  `/${encodeURIComponent(toSlug(cat))}/${encodeURIComponent(toSlug(itemName))}`;
+
 export default function HomeClient() {
-  const router = useRouter();
   const [query, setQuery] = useState("");
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -39,10 +41,9 @@ export default function HomeClient() {
     }
   }
 
-  const navigateTo = (cat: string, itemName: string) => {
+  const closeSearch = () => {
     setFocused(false);
     setQuery("");
-    router.push(`/${encodeURIComponent(toSlug(cat))}/${encodeURIComponent(toSlug(itemName))}`);
   };
 
   const showDropdown = focused && q.length > 0 && results.length > 0;
@@ -90,20 +91,22 @@ export default function HomeClient() {
             <div className="absolute z-50 top-full mt-2 w-full bg-card border border-border rounded-xl shadow-2xl max-h-80 overflow-y-auto">
               {results.map(({ category, items }) => (
                 <div key={category}>
-                  <button
-                    onClick={() => navigateTo(category, items[0])}
-                    className="w-full text-left px-4 py-2.5 text-xs font-semibold text-primary uppercase tracking-wider hover:bg-muted/50 transition-colors border-b border-border/50"
+                  <Link
+                    href={itemHref(category, items[0])}
+                    onClick={closeSearch}
+                    className="block px-4 py-2.5 text-xs font-semibold text-primary uppercase tracking-wider hover:bg-muted/50 transition-colors border-b border-border/50"
                   >
                     {category}
-                  </button>
+                  </Link>
                   {items.map((item) => (
-                    <button
+                    <Link
                       key={item}
-                      onClick={() => navigateTo(category, item)}
-                      className="w-full text-left px-4 py-2.5 pl-8 text-sm text-foreground hover:bg-muted/50 transition-colors"
+                      href={itemHref(category, item)}
+                      onClick={closeSearch}
+                      className="block px-4 py-2.5 pl-8 text-sm text-foreground hover:bg-muted/50 transition-colors"
                     >
                       {item}
-                    </button>
+                    </Link>
                   ))}
                 </div>
               ))}
@@ -123,13 +126,13 @@ export default function HomeClient() {
           <p className="text-xs text-muted-foreground text-center mb-3">카테고리 바로가기</p>
           <div className="flex flex-wrap justify-center gap-2">
             {CATEGORY_LIST.map((cat) => (
-              <button
+              <Link
                 key={cat}
-                onClick={() => navigateTo(cat, CATEGORIES[cat][0])}
+                href={itemHref(cat, CATEGORIES[cat][0])}
                 className="px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:border-foreground/50 hover:text-foreground transition-colors"
               >
                 {cat}
-              </button>
+              </Link>
             ))}
           </div>
         </div>
