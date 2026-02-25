@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import axios from "axios";
 import { INFLATION_ITEMS } from "@/lib/inflation-items";
 
 const KOSIS_BASE_URL =
@@ -13,27 +12,28 @@ async function fetchKosisYearly(
   startYear: string,
   endYear: string,
 ): Promise<Array<{ year: string; index: number }>> {
-  const { data } = await axios.get(KOSIS_BASE_URL, {
-    params: {
-      method: "getList",
-      apiKey,
-      itmId: "T",
-      objL1: "T10",
-      objL2: code,
-      format: "json",
-      jsonVD: "Y",
-      prdSe: "Y",
-      orgId: "101",
-      tblId: "DT_1J22005",
-      startPrdDe: startYear,
-      endPrdDe: endYear,
-    },
+  const params = new URLSearchParams({
+    method: "getList",
+    apiKey,
+    itmId: "T",
+    objL1: "T10",
+    objL2: code,
+    format: "json",
+    jsonVD: "Y",
+    prdSe: "Y",
+    orgId: "101",
+    tblId: "DT_1J22005",
+    startPrdDe: startYear,
+    endPrdDe: endYear,
   });
+
+  const res = await fetch(`${KOSIS_BASE_URL}?${params.toString()}`);
+  const data = await res.json();
 
   if (!Array.isArray(data)) return [];
 
   return data
-    .map((d) => ({ year: d.PRD_DE as string, index: parseFloat(d.DT) }))
+    .map((d: any) => ({ year: d.PRD_DE as string, index: parseFloat(d.DT) }))
     .filter((d) => !isNaN(d.index))
     .sort((a, b) => a.year.localeCompare(b.year));
 }
