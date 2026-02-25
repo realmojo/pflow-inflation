@@ -49,7 +49,14 @@
       "Bash(python3 -c \":*)",
       "Bash(git remote add origin git@github.com:realmojo/pflow-inflation.git)",
       "Bash(git branch -M main)",
-      "Bash(git remote set-url origin https://github.com/realmojo/pflow-inflation.git)"
+      "Bash(git remote set-url origin https://github.com/realmojo/pflow-inflation.git)",
+      "Bash(sips -g all /Users/gshs/Desktop/m/pflow-inflation/public/favicon.png)",
+      "Bash(brew list)",
+      "Bash(pip3 list)",
+      "Bash(pip3 install Pillow)",
+      "Bash(pip3 install --user Pillow)",
+      "Bash(python3 -c \"from PIL import Image; print\\(''ok''\\)\")",
+      "Bash(python3 -m pip install --break-system-packages Pillow)"
     ]
   },
   "enableAllProjectMcpServers": true,
