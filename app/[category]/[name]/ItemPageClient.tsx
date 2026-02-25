@@ -54,6 +54,31 @@ export default function ItemPageClient() {
       });
   }, [name]);
 
+  // Dynamic title & JSON-LD
+  useEffect(() => {
+    document.title = `${name} 물가 추이 | 대한민국 물가 인플레이션`;
+
+    const SITE_URL = "https://inflation.pflow.app";
+    const url = `${SITE_URL}/${toSlug(category)}/${toSlug(name)}`;
+
+    const breadcrumb = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "홈", item: SITE_URL },
+        { "@type": "ListItem", position: 2, name: category, item: `${SITE_URL}/${toSlug(category)}` },
+        { "@type": "ListItem", position: 3, name, item: url },
+      ],
+    };
+
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.textContent = JSON.stringify(breadcrumb);
+    document.head.appendChild(script);
+
+    return () => { document.head.removeChild(script); };
+  }, [category, name]);
+
   const foodList = CATEGORIES[category] ?? [];
   const trackingStart = itemData?.longTerm?.[0]?.year ?? "—";
   const trackingEnd = itemData?.lastUpdated ?? "—";
