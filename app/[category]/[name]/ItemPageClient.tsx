@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { INFLATION_ITEMS, CATEGORIES, CATEGORY_LIST } from "@/lib/inflation-items";
 import { toSlug, fromSlug } from "@/lib/slug";
+import Footer from "@/components/Footer";
 
 type ItemData = {
   category: string;
@@ -37,7 +38,9 @@ export default function ItemPageClient() {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
   const searchRef = React.useRef<HTMLDivElement>(null);
+  const tooltipRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const item = INFLATION_ITEMS.find((i) => i.name === name);
@@ -82,11 +85,14 @@ export default function ItemPageClient() {
     return () => { document.head.removeChild(script); };
   }, [category, name]);
 
-  // Close search on outside click
+  // Close search / tooltip on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
         setSearchFocused(false);
+      }
+      if (tooltipRef.current && !tooltipRef.current.contains(e.target as Node)) {
+        setShowTooltip(false);
       }
     };
     document.addEventListener("mousedown", handler);
@@ -111,6 +117,20 @@ export default function ItemPageClient() {
   const trackingStart = itemData?.longTerm?.[0]?.year ?? "—";
   const trackingEnd = itemData?.lastUpdated ?? "—";
   const isAggregate = itemData?.category === "종합지수";
+
+  // 10년 전 대비 원 단위 차이 계산
+  const tenYearPriceDiff = (() => {
+    if (!itemData || isAggregate) return null;
+    const latestYear = parseInt(itemData.lastUpdated ?? "");
+    if (isNaN(latestYear)) return null;
+    const targetYear = String(latestYear - 10);
+    const oldEntry = itemData.fiveYear.find((d) => d.year === targetYear);
+    if (!oldEntry) return null;
+    return {
+      oldPrice: oldEntry.price,
+      diff: itemData.currentPrice - oldEntry.price,
+    };
+  })();
 
   const navigateTo = (cat: string, itemName: string) => {
     router.push(`/${toSlug(cat)}/${toSlug(itemName)}`);
@@ -218,7 +238,7 @@ export default function ItemPageClient() {
 
         {/* Key stats */}
         <div className="mb-6 border border-border rounded-lg overflow-hidden
-          grid grid-cols-1 divide-y sm:grid-cols-3 sm:divide-x sm:divide-y-0 divide-border">
+          grid grid-cols-1 divide-y sm:grid-cols-2 lg:grid-cols-4 sm:divide-x sm:divide-y-0 divide-border">
           <div className="bg-card px-4 py-4 sm:px-6 sm:py-5 flex sm:block items-center justify-between">
             <p className="text-xs text-muted-foreground">
               {isAggregate ? "최신 지수값" : "현재 평균가"}
@@ -238,18 +258,42 @@ export default function ItemPageClient() {
           </div>
           <div className="bg-card px-4 py-4 sm:px-6 sm:py-5 flex sm:block items-center justify-between">
             <p className="text-xs text-muted-foreground">10년 전 대비</p>
-            <p className="text-xl sm:text-2xl font-bold tabular-nums text-destructive">
+            <p className={`text-xl sm:text-2xl font-bold tabular-nums ${itemData?.tenYearIncrease != null && itemData.tenYearIncrease < 0 ? "text-blue-400" : "text-destructive"}`}>
               {loading ? (
                 <span className="text-muted-foreground text-base">—</span>
               ) : itemData?.tenYearIncrease != null ? (
                 <>
-                  +{itemData.tenYearIncrease}
+                  {itemData.tenYearIncrease > 0 ? "+" : ""}{itemData.tenYearIncrease}
                   <span className="text-sm sm:text-base font-normal text-muted-foreground ml-1">%</span>
                 </>
               ) : (
                 <span className="text-muted-foreground text-base">—</span>
               )}
             </p>
+          </div>
+          <div className="bg-card px-4 py-4 sm:px-6 sm:py-5 flex sm:block items-center justify-between">
+            <p className="text-xs text-muted-foreground">10년간 가격 변화</p>
+            <p className="text-xl sm:text-2xl font-bold tabular-nums">
+              {loading ? (
+                <span className="text-muted-foreground text-base">—</span>
+              ) : tenYearPriceDiff ? (
+                <>
+                  <span className={tenYearPriceDiff.diff >= 0 ? "text-destructive" : "text-blue-400"}>
+                    {tenYearPriceDiff.diff > 0 ? "+" : ""}{tenYearPriceDiff.diff.toLocaleString()}
+                  </span>
+                  <span className="text-sm sm:text-base font-normal text-muted-foreground ml-1">원</span>
+                </>
+              ) : isAggregate ? (
+                <span className="text-muted-foreground text-base">—</span>
+              ) : (
+                <span className="text-muted-foreground text-base">—</span>
+              )}
+            </p>
+            {!loading && tenYearPriceDiff && (
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                {tenYearPriceDiff.oldPrice.toLocaleString()}원 → {itemData!.currentPrice.toLocaleString()}원
+              </p>
+            )}
           </div>
           <div className="bg-card px-4 py-4 sm:px-6 sm:py-5 flex sm:block items-center justify-between">
             <p className="text-xs text-muted-foreground">추적 기간</p>
@@ -327,7 +371,28 @@ export default function ItemPageClient() {
           {/* Long-term line chart */}
           <div className="lg:col-span-3 border border-border rounded-lg p-4 sm:p-6 bg-card">
             <div className="mb-4">
-              <h2 className="text-sm font-semibold">{name} — 장기 물가지수 추이</h2>
+              <div className="flex items-center gap-1.5">
+                <h2 className="text-sm font-semibold">{name} — 장기 물가지수 추이</h2>
+                <div ref={tooltipRef} className="relative">
+                  <button
+                    onClick={() => setShowTooltip((v) => !v)}
+                    className="w-4 h-4 rounded-full border border-muted-foreground/40 text-muted-foreground hover:text-foreground hover:border-foreground/60 transition-colors flex items-center justify-center text-[10px] font-bold leading-none"
+                  >
+                    ?
+                  </button>
+                  {showTooltip && (
+                    <div className="absolute z-50 left-1/2 -translate-x-1/2 top-full mt-2 w-64 bg-card border border-border rounded-lg shadow-2xl p-3 text-xs text-muted-foreground leading-relaxed">
+                      <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-card border-l border-t border-border rotate-45" />
+                      <p className="font-semibold text-foreground mb-1">물가지수란?</p>
+                      <p>
+                        2020년 가격을 100으로 놓고 각 연도의 가격 수준을 상대적으로 나타낸 수치입니다.
+                        예를 들어 지수가 120이면 2020년보다 20% 올랐다는 뜻이고, 80이면 20% 낮았다는 뜻입니다.
+                      </p>
+                      <p className="mt-1.5 text-muted-foreground/70">출처: 통계청 KOSIS 생활물가지수</p>
+                    </div>
+                  )}
+                </div>
+              </div>
               <p className="text-xs text-muted-foreground mt-1">
                 2020년 = 100 기준{!loading && itemData ? `, ${trackingStart}~${trackingEnd}` : ""}
               </p>
@@ -384,11 +449,8 @@ export default function ItemPageClient() {
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className="mt-10 pt-6 border-t border-border text-xs text-muted-foreground/50">
-          출처: 통계청 KOSIS 생활물가지수 (2020=100)
-        </footer>
       </div>
+      <Footer />
     </div>
   );
 }

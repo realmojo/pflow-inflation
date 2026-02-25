@@ -85,8 +85,8 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
       </head>
-      <body className="min-h-screen bg-background font-sans antialiased">
-        <main>{children}</main>
+      <body className="min-h-screen bg-background font-sans antialiased flex flex-col">
+        <main className="flex-1">{children}</main>
         <Script
           strategy="lazyOnload"
           async

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { CATEGORIES, CATEGORY_LIST } from "@/lib/inflation-items";
 import { toSlug } from "@/lib/slug";
+import Footer from "@/components/Footer";
 
 const itemHref = (cat: string, itemName: string) =>
   `/${encodeURIComponent(toSlug(cat))}/${encodeURIComponent(toSlug(itemName))}`;
@@ -138,10 +139,7 @@ export default function HomeClient() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="py-6 text-center text-xs text-muted-foreground/50">
-        출처: 통계청 KOSIS 생활물가지수 (2020=100)
-      </footer>
+      <Footer />
     </div>
   );
 }

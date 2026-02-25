@@ -57,7 +57,10 @@
       "Bash(pip3 install --user Pillow)",
       "Bash(python3 -c \"from PIL import Image; print\\(''ok''\\)\")",
       "Bash(python3 -m pip install --break-system-packages Pillow)",
-      "WebFetch(domain:inflation.pflow.app)"
+      "WebFetch(domain:inflation.pflow.app)",
+      "Bash(git -C /Users/gshs/Desktop/m/pflow-inflation status)",
+      "Bash(git -C /Users/gshs/Desktop/m/pflow-inflation add app/[category]/[name]/page.tsx)",
+      "Bash(git -C:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
