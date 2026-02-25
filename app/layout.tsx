@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -48,6 +49,12 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  verification: {
+    google: "u4nN7Y33ejRUJ2y0573COEWWUgV5NDgTrE3A0PiA3V8",
+    other: {
+      "naver-site-verification": ["bc8f4090d3e9deed9a1c67f95ed32ded5ae21d61"],
+    },
+  },
 };
 
 const websiteJsonLd = {
@@ -80,6 +87,45 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background font-sans antialiased">
         <main>{children}</main>
+        <Script
+          strategy="lazyOnload"
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1963334904140891"
+        />
+        <Script
+          id="google-tag-manager"
+          strategy="afterInteractive"
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-N5CMCH2S4R"
+        />
+        <Script
+          id="google-tag-manager-script"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-N5CMCH2S4R', {
+              page_path: window.location.pathname,
+            });
+          `,
+          }}
+        />
+        <Script
+          strategy="beforeInteractive"
+          id="naver-analytics"
+          src="//wcs.naver.net/wcslog.js"
+        />
+        <Script
+          strategy="beforeInteractive"
+          id="naver-analytics-init"
+          type="text/javascript"
+          dangerouslySetInnerHTML={{
+            __html:
+              'if(!wcs_add) var wcs_add = {}; wcs_add["wa"] = "fa1a3e5c086a58"; if(window.wcs) {wcs_do();}',
+          }}
+        />
       </body>
     </html>
   );
