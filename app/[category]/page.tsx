@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { CATEGORIES } from "@/lib/inflation-items";
 import { toSlug, fromSlug } from "@/lib/slug";
 
+export const runtime = "edge";
+
 export default async function CategoryPage({
   params,
 }: {
