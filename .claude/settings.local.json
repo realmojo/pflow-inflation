@@ -60,7 +60,10 @@
       "WebFetch(domain:inflation.pflow.app)",
       "Bash(git -C /Users/gshs/Desktop/m/pflow-inflation status)",
       "Bash(git -C /Users/gshs/Desktop/m/pflow-inflation add app/[category]/[name]/page.tsx)",
-      "Bash(git -C:*)"
+      "Bash(git -C:*)",
+      "WebFetch(domain:kosis.kr)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:wooiljeong.github.io)"
     ]
   },
   "enableAllProjectMcpServers": true,
