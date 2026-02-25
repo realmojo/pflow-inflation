@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { INFLATION_ITEMS, CATEGORY_LIST, CATEGORIES } from "@/lib/inflation-items";
+import { INFLATION_ITEMS, CATEGORY_LIST } from "@/lib/inflation-items";
 import { toSlug } from "@/lib/slug";
 
 const SITE_URL = "https://inflation.pflow.app";
@@ -23,8 +23,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: SITE_URL,
       lastModified: new Date(),
-      changeFrequency: "weekly",
+      changeFrequency: "weekly" as const,
       priority: 1.0,
+    },
+    {
+      url: `${SITE_URL}/statistics`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/regional`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.9,
     },
     ...categoryRoutes,
     ...itemRoutes,

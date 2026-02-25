@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: "%s | 대한민국 물가 인플레이션",
   },
   description:
-    "통계청 KOSIS 생활물가지수(2020=100) 기반 151개 품목의 장기 물가 변화를 한눈에 확인하세요. 외식·식재료·의류·교통·교육 등 다양한 품목의 인플레이션 추이를 분석합니다.",
+    "통계청 KOSIS 생활물가지수(2020=100) 기반 151개 품목의 장기 물가 변화를 한눈에 확인하세요. 외식·식재료·의류·교통·교육 등 다양한 품목의 인플레이션 추이를 분석합니다. 최저임금, GDP 성장률, 고용률 등 주요 경제지표도 함께 제공합니다.",
   keywords: [
     "물가 인플레이션",
     "생활물가지수",
@@ -25,8 +25,22 @@ export const metadata: Metadata = {
     "소비자물가",
     "외식 물가",
     "식재료 가격",
+    "물가지수",
+    "한국 물가",
+    "물가 상승률",
+    "최저임금",
+    "GDP 성장률",
+    "고용률",
+    "경제지표",
+    "소비자물가지수",
+    "CPI",
+    "인플레이션율",
   ],
   authors: [{ name: "pflow.app" }],
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
   openGraph: {
     type: "website",
     locale: "ko_KR",
@@ -34,13 +48,22 @@ export const metadata: Metadata = {
     siteName: "대한민국 물가 인플레이션",
     title: "대한민국 물가 인플레이션 | 151개 품목 장기 물가지수",
     description:
-      "통계청 KOSIS 생활물가지수(2020=100) 기반 151개 품목의 장기 물가 변화를 한눈에 확인하세요.",
+      "통계청 KOSIS 생활물가지수(2020=100) 기반 151개 품목의 장기 물가 변화를 한눈에 확인하세요. 최저임금, GDP, 고용률 등 경제지표 대시보드도 제공합니다.",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "대한민국 물가 인플레이션 - 151개 품목 장기 물가지수",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "대한민국 물가 인플레이션",
+    title: "대한민국 물가 인플레이션 | 151개 품목 장기 물가지수",
     description:
       "통계청 KOSIS 생활물가지수(2020=100) 기반 151개 품목의 장기 물가 변화를 한눈에 확인하세요.",
+    images: ["/og.png"],
   },
   alternates: {
     canonical: SITE_URL,
@@ -48,6 +71,13 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
   verification: {
     google: "u4nN7Y33ejRUJ2y0573COEWWUgV5NDgTrE3A0PiA3V8",
@@ -61,6 +91,7 @@ const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "대한민국 물가 인플레이션",
+  alternateName: "한국 물가지수 트래커",
   url: SITE_URL,
   description:
     "통계청 KOSIS 생활물가지수(2020=100) 기반 151개 품목의 장기 물가 변화를 한눈에 확인하세요.",

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
 import { CATEGORIES, CATEGORY_LIST } from "@/lib/inflation-items";
 import { toSlug } from "@/lib/slug";
+import { CPI_RATE, MINIMUM_WAGE, GDP_GROWTH, EMPLOYMENT, getLatest } from "@/lib/macro-data";
 import Footer from "@/components/Footer";
 
 const itemHref = (cat: string, itemName: string) =>
@@ -18,7 +18,10 @@ export default function HomeClient() {
   // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setFocused(false);
       }
     };
@@ -34,7 +37,7 @@ export default function HomeClient() {
     for (const cat of CATEGORY_LIST) {
       const catMatch = cat.toLowerCase().includes(q);
       const matchingItems = CATEGORIES[cat].filter(
-        (item) => item.toLowerCase().includes(q) || catMatch
+        (item) => item.toLowerCase().includes(q) || catMatch,
       );
       if (matchingItems.length > 0) {
         results.push({ category: cat, items: matchingItems });
@@ -51,7 +54,7 @@ export default function HomeClient() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <div className="flex-1 flex flex-col items-center justify-center px-4 pb-32">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 pb-16">
         {/* Title */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-center mb-3">
           대한민국 물가 인플레이션
@@ -92,22 +95,22 @@ export default function HomeClient() {
             <div className="absolute z-50 top-full mt-2 w-full bg-card border border-border rounded-xl shadow-2xl max-h-80 overflow-y-auto">
               {results.map(({ category, items }) => (
                 <div key={category}>
-                  <Link
+                  <a
                     href={itemHref(category, items[0])}
                     onClick={closeSearch}
                     className="block px-4 py-2.5 text-xs font-semibold text-primary uppercase tracking-wider hover:bg-muted/50 transition-colors border-b border-border/50"
                   >
                     {category}
-                  </Link>
+                  </a>
                   {items.map((item) => (
-                    <Link
+                    <a
                       key={item}
                       href={itemHref(category, item)}
                       onClick={closeSearch}
                       className="block px-4 py-2.5 pl-8 text-sm text-foreground hover:bg-muted/50 transition-colors"
                     >
                       {item}
-                    </Link>
+                    </a>
                   ))}
                 </div>
               ))}
@@ -124,17 +127,67 @@ export default function HomeClient() {
 
         {/* Category quick links */}
         <div className="mt-10 w-full max-w-2xl">
-          <p className="text-xs text-muted-foreground text-center mb-3">카테고리 바로가기</p>
+          <p className="text-xs text-muted-foreground text-center mb-3">
+            카테고리 바로가기
+          </p>
           <div className="flex flex-wrap justify-center gap-2">
             {CATEGORY_LIST.map((cat) => (
-              <Link
+              <a
                 key={cat}
                 href={itemHref(cat, CATEGORIES[cat][0])}
                 className="px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:border-foreground/50 hover:text-foreground transition-colors"
               >
                 {cat}
-              </Link>
+              </a>
             ))}
+          </div>
+        </div>
+
+        {/* Macro economic indicator cards */}
+        <div className="mt-12 w-full max-w-2xl">
+          <p className="text-xs text-muted-foreground text-center mb-3">
+            주요 경제지표
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="bg-card border border-border rounded-lg p-4 text-center">
+              <p className="text-xs text-muted-foreground">소비자물가</p>
+              <p className={`text-2xl font-bold tabular-nums ${getLatest(CPI_RATE).rate > 0 ? "text-destructive" : ""}`}>
+                {getLatest(CPI_RATE).rate}%
+              </p>
+              <p className="text-[11px] text-muted-foreground">전년대비</p>
+            </div>
+            <div className="bg-card border border-border rounded-lg p-4 text-center">
+              <p className="text-xs text-muted-foreground">최저임금</p>
+              <p className="text-2xl font-bold tabular-nums">
+                {getLatest(MINIMUM_WAGE).hourly.toLocaleString()}원
+              </p>
+              <p className="text-[11px] text-muted-foreground">시간당</p>
+            </div>
+            <div className="bg-card border border-border rounded-lg p-4 text-center">
+              <p className="text-xs text-muted-foreground">GDP 성장률</p>
+              <p className="text-2xl font-bold tabular-nums">
+                {getLatest(GDP_GROWTH).rate}%
+              </p>
+              <p className="text-[11px] text-muted-foreground">전년대비</p>
+            </div>
+            <div className="bg-card border border-border rounded-lg p-4 text-center">
+              <p className="text-xs text-muted-foreground">고용률</p>
+              <p className="text-2xl font-bold tabular-nums">
+                {getLatest(EMPLOYMENT).employment}%
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                {getLatest(EMPLOYMENT).year}년
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 text-center">
+            <a
+              href="/statistics"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              경제지표 대시보드 바로가기
+              <span>→</span>
+            </a>
           </div>
         </div>
       </div>

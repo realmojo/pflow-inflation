@@ -71,6 +71,22 @@ export default function Footer() {
             <ul className="space-y-1.5">
               <li>
                 <a
+                  href="/statistics"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  경제지표 대시보드
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/regional"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  지역별 물가지수
+                </a>
+              </li>
+              <li>
+                <a
                   href="https://kosis.kr"
                   target="_blank"
                   rel="noopener noreferrer"
